@@ -17,6 +17,11 @@ public class SVGOutline : Outline {
 	private const string SMOOTH_QUAD_TO = "T";
 	private const string CLOSE = "Z";
 
+    public bool normalize = true;
+    public float scale = 10;
+
+    private Vector2 centerPoint = new Vector2(0,0);
+
 	private enum SVGPathMode
 	{
 		MoveTo, // (x y)+ , if more than 1 pair, next are line to.
@@ -93,10 +98,13 @@ public class SVGOutline : Outline {
 				max.y = v.y;
 			}
 		}
-		var mid = (max - min) / 2;
+        var size = max - min;
+        var mid = size / 2;
+        var scale = normalize ? this.scale / Mathf.Max(mid.x, mid.y) : this.scale;
+//        centerPoint = mid * scale;
 		for (int i = 0; i < vertexList.Count; i++)
 		{
-			vertexList[i] = vertexList[i] - min - mid;
+			vertexList[i] = (vertexList[i] - min - mid) * scale;
 		}
 		reader.Close();
 		return vertexList;
@@ -187,5 +195,13 @@ public class SVGOutline : Outline {
 		
 		return vertexList;
 	}
+
+    override public Vector2 Center
+    {
+        get
+        {
+            return centerPoint;
+        }
+    }
 
 }

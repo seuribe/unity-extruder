@@ -41,6 +41,8 @@ public class Extruder : MonoBehaviour {
     public bool invertBottom = false;
     public bool invertSides = false;
 
+    public float scaleOutline;
+
     public bool generateCollider = false;
     public bool generateOnEditor = false;
 
@@ -136,6 +138,11 @@ public class Extruder : MonoBehaviour {
         }
     }
 
+    private bool IsDescandent(Transform t, Transform other)
+    {
+        return (other == null || t == null) ? false : (t.parent == other || IsDescandent(t.parent, other));
+    }
+
     private bool PrepareVertices() {
         baseOutlineVertices = null;
         stepsSideVertexList = null;
@@ -162,6 +169,8 @@ public class Extruder : MonoBehaviour {
         var topIndices = ttor.Triangulate();
 
         baseOutlineVertices = flatVertices.Select(v => new Vector3(v.x, 0, -v.y)).ToList();
+        var outlineCenter = new Vector3(outline.Center.x, 0, -outline.Center.y);
+
 
         // 2. duplicate and invert indices to create bottom side.
         //    Also, displace indices to match duplicated vertices index
@@ -176,10 +185,14 @@ public class Extruder : MonoBehaviour {
         var stepIndicesList = new List<int[]>();
         var lastVertexList = new List<Vector3>(baseOutlineVertices);
 
+        var lt = gameObject.transform.localScale;
         foreach (var t in path.Steps)
         {
             int[] stepIndices;
-            List<Vector3> stepVertices = lastVertexList.Select(v => t.TransformPoint(v)).ToList();
+
+            List<Vector3> stepVertices = baseOutlineVertices.Select(
+                v => transform.InverseTransformPoint(t.TransformPoint(v))
+                ).ToList();
             List<Vector3> stepStripVertices = null;
             CreateSideTriangles(lastVertexList, stepVertices, out stepStripVertices, out stepIndices);
             stepsSideVertexList.Add(stepStripVertices);
@@ -190,7 +203,6 @@ public class Extruder : MonoBehaviour {
         }
 
         // bottom vertex list
-
 
         // 4. put everything together and generate final mesh
         if (invertTop)
@@ -285,6 +297,14 @@ public class Extruder : MonoBehaviour {
 
                 lastVertices = nextVertices;
                 DrawOutlineGizmos(lastVertices);
+            }
+            Gizmos.color = Color.yellow;
+            Vector3 lastPos = gameObject.transform.position;
+            foreach (var step in ExtrudePath.Steps)
+            {
+                Gizmos.DrawSphere(step.position, 1);
+                Gizmos.DrawLine(lastPos, step.position);
+                lastPos = step.position;
             }
         }
     }

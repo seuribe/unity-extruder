@@ -23,4 +23,9 @@ public abstract class Outline : MonoBehaviour
         get;
     }
 
+    abstract public Vector2 Center
+    {
+        get;
+    }
+
 }

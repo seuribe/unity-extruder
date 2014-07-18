@@ -52,6 +52,7 @@
      <Compile Include="Assets\Source\Outline.cs" />
      <Compile Include="Assets\Source\OutlineSerializer.cs" />
      <Compile Include="Assets\Source\SVGOutline.cs" />
+     <Compile Include="Assets\Source\TransformListPath.cs" />
      <Compile Include="Assets\Source\Triangulator.cs" />
      <None Include="Assets\SVGPaths\shape.svg.txt" />
   </ItemGroup>

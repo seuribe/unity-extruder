@@ -19,8 +19,10 @@ public class SVGOutline : Outline {
 
     public bool normalize = true;
     public float scale = 10;
+    public int curveSegments = 8;
 
     private Vector2 centerPoint = new Vector2(0,0);
+    public string pathId;
 
 	private enum SVGPathMode
 	{
@@ -70,6 +72,14 @@ public class SVGOutline : Outline {
 				var name = reader.Name;
 				if (name.Equals("path"))
 				{
+                    if (pathId != null && !pathId.Equals(string.Empty))
+                    {
+                        var id = reader.GetAttribute("id");
+                        if (id != pathId)
+                        {
+                            continue;
+                        }
+                    }
 					vertexList = ReadVertexList(reader.GetAttribute("d"));
 				}
 				break;
@@ -168,28 +178,55 @@ public class SVGOutline : Outline {
 			}
 			switch (mode)
 			{
-			case SVGPathMode.MoveTo:
-			{
-				Vector2 newVertex = DequeueVertex(commands);
-				if (relative)
-				{
-					newVertex += lastVertex;
-				}
-				vertexList.Add(newVertex);
-				lastVertex = newVertex;
-				mode = SVGPathMode.LineTo;
-			} break;
-			case SVGPathMode.LineTo:
-			{
-				Vector2 newVertex = DequeueVertex(commands);
-				if (relative)
-				{
-					newVertex += lastVertex;
-				}
-				vertexList.Add(newVertex);
-				lastVertex = newVertex;
-			} break;
-				
+                case SVGPathMode.CurveTo:
+                {
+                    Vector2 last = lastVertex;
+                    Vector2 cpStart = DequeueVertex(commands);
+                    Vector2 cpEnd = DequeueVertex(commands);
+                    Vector2 dest = DequeueVertex(commands);
+
+                    float step = (float)1 / curveSegments;
+                    float t = step;
+                    for (int i = 0; i < curveSegments; i++)
+                    {
+                        float rem = (1 - t);
+                        var p = last * (rem * rem * rem) +
+                            cpStart * (3 * rem * rem * t) +
+                            cpEnd * (3 * rem * t * t) +
+                            dest * (t * t * t);
+
+                        if (relative)
+                        {
+                            p += lastVertex;
+                        }
+
+                        vertexList.Add(p);
+                        t += step;
+                    }
+                    lastVertex = dest;
+
+                } break;
+                case SVGPathMode.MoveTo:
+			    {
+				    Vector2 newVertex = DequeueVertex(commands);
+				    if (relative)
+				    {
+					    newVertex += lastVertex;
+				    }
+				    vertexList.Add(newVertex);
+				    lastVertex = newVertex;
+				    mode = SVGPathMode.LineTo;
+			    } break;
+			    case SVGPathMode.LineTo:
+			    {
+				    Vector2 newVertex = DequeueVertex(commands);
+				    if (relative)
+				    {
+					    newVertex += lastVertex;
+				    }
+				    vertexList.Add(newVertex);
+				    lastVertex = newVertex;
+			    } break;
 			}
 		} while (mode != SVGPathMode.Close);
 		

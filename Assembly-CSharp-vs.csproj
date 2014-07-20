@@ -54,7 +54,11 @@
      <Compile Include="Assets\Source\SVGOutline.cs" />
      <Compile Include="Assets\Source\TransformListPath.cs" />
      <Compile Include="Assets\Source\Triangulator.cs" />
+     <None Include="Assets\SVGPaths\curve_shape.svg.txt" />
+     <None Include="Assets\Player.shader" />
      <None Include="Assets\SVGPaths\shape.svg.txt" />
+     <None Include="Assets\SVGPaths\shape2.svg.txt" />
+     <None Include="Assets\SVGPaths\shape3.svg.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

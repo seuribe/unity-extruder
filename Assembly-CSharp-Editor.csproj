@@ -48,7 +48,11 @@
   <ItemGroup>
      <Compile Include="Assets\Source\Editor\ExtruderEditor.cs" />
      <Compile Include="Assets\Source\Editor\GameObjectHierarchyPathEditor.cs" />
+     <None Include="Assets\SVGPaths\curve_shape.svg.txt" />
+     <None Include="Assets\Player.shader" />
      <None Include="Assets\SVGPaths\shape.svg.txt" />
+     <None Include="Assets\SVGPaths\shape2.svg.txt" />
+     <None Include="Assets\SVGPaths\shape3.svg.txt" />
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>

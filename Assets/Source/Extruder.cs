@@ -298,11 +298,11 @@ public class Extruder : MonoBehaviour {
                 lastVertices = nextVertices;
                 DrawOutlineGizmos(lastVertices);
             }
-            Gizmos.color = Color.yellow;
+            Gizmos.color = Color.gray;
             Vector3 lastPos = gameObject.transform.position;
             foreach (var step in ExtrudePath.Steps)
             {
-                Gizmos.DrawSphere(step.position, 1);
+                Gizmos.DrawWireCube(step.position, Vector3.one);
                 Gizmos.DrawLine(lastPos, step.position);
                 lastPos = step.position;
             }
